@@ -1,4 +1,8 @@
-.venv/ 
+venvs/
+.venv/  
 env/  
 __pycache__ 
 *.pyc 
+venvs/nlp-stat/
+venvs/nlp-dl/
+venvs/nlp-llm/
