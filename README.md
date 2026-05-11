@@ -110,6 +110,20 @@ Expected: path should point to `.venv`.
 
 ---
 
+### Project Structure
+```
+.
+├── datasets
+│   └── EntityRecognitioninResumes.json
+├── .gitignore
+├── notebooks
+│   └── main.ipynb
+├── README.md
+└── requirements.txt
+
+
+```
+---
 ### Quick Reset
 
 ```bash
