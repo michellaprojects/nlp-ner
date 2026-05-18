@@ -5,3 +5,5 @@ __pycache__
 *.bin
 *.gz
 
+# models
+notebooks/Modelling/model_result/distilbert_best.pt
