@@ -4,6 +4,7 @@ __pycache__
 *.pyc
 *.bin
 *.gz
+data/
 
 # models
 notebooks/Modelling/model_result/distilbert_best.pt
