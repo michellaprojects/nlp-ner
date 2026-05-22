@@ -8,4 +8,4 @@ data/
 .env
 
 # models
-notebooks/Modelling/model_result/distilbert_best.pt
+notebooks/Modelling/model_result/
