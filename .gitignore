@@ -8,4 +8,4 @@ data/
 .env
 
 # models
-notebooks/Modelling/model_result/
+# notebooks/Modelling/model_result/
