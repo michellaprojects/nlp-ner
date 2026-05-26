@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scanNER – Resume Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────────────────── -->
+  <nav>
+    <span class="logo">scan<em>NER</em></span>
+  </nav>
+
+  <!-- ── HERO ─────────────────────────────────────────── -->
+  <main class="hero">
+    <div class="hero-text">
+      <p class="eyebrow">NLP · Named-Entity Recognition</p>
+      <h1>Resume<br /><em>Intelligence,</em><br />Structured.</h1>
+      <p class="subtitle">
+        Upload a CV and let our NER model instantly extract names, skills,
+        education, experience, and more — turning unstructured text into
+        actionable candidate data.
+      </p>
+
+      <!-- problem statement accordion -->
+      <details class="problem-block">
+        <summary>Why does this matter?</summary>
+        <p>
+          A single job vacancy can attract <strong>250–750 applicants</strong>, yet manual
+          resume screening averages just <strong>7.4 seconds per document</strong> — making
+          the process both error-prone and biased. Around <strong>82 % of companies</strong>
+          now use AI-based screening tools, and NLP-driven parsing can cut selection
+          cost and duration by up to <strong>85 %</strong>. By focusing on skills rather than
+          demographics, fair AI screening helps reduce age, gender, and ethnicity bias.
+          <em>scanNER</em> investigates statistical, neural, and LLM-based NER models
+          to extract key candidate attributes and enhance efficiency and fairness.
+        </p>
+      </details>
+    </div>
+
+    <!-- ── UPLOAD CARD ──────────────────────────────── -->
+    <div class="card upload-card">
+      <h2>Scan a Resume</h2>
+      <p class="card-hint">Supports <strong>PDF</strong> files.</p>
+
+      <label class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt" hidden />
+        <div class="drop-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 6v24M14 16l10-10 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 34v4a2 2 0 002 2h28a2 2 0 002-2v-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="drop-primary" id="dropLabel">Drag & drop your file here</p>
+        <p class="drop-secondary">or <span class="link-text">browse to upload</span></p>
+        <p class="file-chosen" id="fileChosen"></p>
+      </label>
+
+      <button class="btn-primary" id="analyzeBtn" disabled>Analyze Resume →</button>
+    </div>
+  </main>
+
+  <!-- ── ERROR POPUP ───────────────────────────────── -->
+  <div class="popup-overlay" id="popupOverlay" hidden>
+    <div class="popup">
+      <span class="popup-icon">⚠</span>
+      <h3>Something went wrong</h3>
+      <p id="popupMessage">Unknown error.</p>
+      <button class="btn-secondary" id="popupClose">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- ── LOADING OVERLAY ───────────────────────────── -->
+  <div class="loading-overlay" id="loadingOverlay" hidden>
+    <div class="spinner"></div>
+    <p>Scanning resume…</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

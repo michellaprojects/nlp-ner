@@ -8,5 +8,4 @@ data/
 .env
 
 # models
-notebooks/Modelling/model_result/
-*.pt
+notebooks/Modelling/model_result/bert_best.pt.zip 
