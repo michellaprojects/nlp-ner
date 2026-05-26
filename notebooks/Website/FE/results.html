@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scanNER – Results</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────────────────── -->
+  <nav>
+    <span class="logo">scan<em>NER</em></span>
+  </nav>
+
+  <!-- ── RESULTS ───────────────────────────────────── -->
+  <main class="results-main">
+    <div class="results-header">
+      <p class="eyebrow">Extraction complete</p>
+      <h1>Candidate <em>Profile</em></h1>
+      <p class="subtitle" id="filenameLabel"></p>
+    </div>
+
+    <div class="results-grid" id="resultsGrid">
+      <!-- cards injected by JS -->
+    </div>
+
+    <div class="results-actions">
+      <!-- <button class="btn-secondary" id="copyBtn">Copy JSON</button> -->
+      <a href="index.html" class="btn-primary">Scan another →</a>
+    </div>
+  </main>
+
+  <!-- ── ERROR POPUP ───────────────────────────────── -->
+  <div class="popup-overlay" id="popupOverlay" hidden>
+    <div class="popup">
+      <span class="popup-icon">⚠</span>
+      <h3>No data found</h3>
+      <p id="popupMessage">No results to display. Please go back and upload a resume.</p>
+      <a href="index.html" class="btn-secondary">Go back</a>
+    </div>
+  </div>
+
+  <script src="results.js"></script>
+</body>
+</html>
