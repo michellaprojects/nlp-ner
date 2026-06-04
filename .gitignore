@@ -9,3 +9,6 @@ data/
 
 # models
 notebooks/Modelling/model_result/bert_best.pt.zip 
+notebooks/Modelling/model_result/distilbert_best.pt
+notebooks/Modelling/model_result/bert_best.pt
+notebooks/Modelling/model_result/bert_ner.zip
