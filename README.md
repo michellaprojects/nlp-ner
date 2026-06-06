@@ -3,7 +3,8 @@ Models used:
 - CRF 
 - HMM Generative 
 - BiLSTM-CRF 
-- BiLSTM-CRF + LSTM char embed
+- BiLSTM-CRF + LSTM 
+- BiLSTM-CRF + CharCNN
 - DistilBERT 
 - BERT 
 - Llama  
