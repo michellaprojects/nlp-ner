@@ -1,7 +1,6 @@
 """
 preprocessing.py
-Semua fungsi preprocessing untuk inference NER — dipisah dari app.py.
-Berdasarkan Preprocessing.ipynb dan bilstm-crf-lstm.ipynb.
+Fungsi preprocessing untuk inference NER berbasis CRF — dipakai app.py.
 """
 
 import re
@@ -17,11 +16,6 @@ Non_lemma_label = {
     'Name', 'Email Address', 'Graduation Year',
     'Location', 'College Name', 'Companies worked at'
 }
-
-CHAR_PAD = '<CPAD>'
-CHAR_UNK = '<CUNK>'
-MAX_LEN  = 256
-MAX_CHAR = 20
 
 _TECH_TOKEN    = re.compile(r'[+#]|\d|\.\w|^[A-Z]{1,5}$|^\.[a-z]+')
 _NOISE_PATTERN = re.compile(r'^[^\w.#+]+$|^[\-–—]+$|^[•·▪●■◦○]+$|^[Ââ€¢§]+$')
@@ -74,63 +68,102 @@ def normalize_token(token: str, apply_lemma: bool = True) -> str | None:
         token = lemmatize(token)
     return token or None
 
+def normalize_sequence(
+    bio_tokens     : list[tuple[str, str]],
+    no_lemma_labels: set = Non_lemma_label
+) -> list[tuple[str, str]]:
+    """Normalize a list of (token, BIO-tag) pairs, skipping noise tokens."""
+    result = []
+    for tok, tag in bio_tokens:
+        entity      = tag.split('-', 1)[1] if '-' in tag else None
+        apply_lemma = entity not in no_lemma_labels if entity else True
+        norm = normalize_token(tok, apply_lemma=apply_lemma)
+        if norm is not None:
+            result.append((norm, tag))
+    return result
+
 # ── Tokenization ──────────────────────────────────────────────────────────────
 
 def word_tokenize(text: str) -> list[tuple]:
     return [(m.group(), m.start(), m.end()) for m in re.finditer(r'\S+', text)]
 
-# ── Encoding (BiLSTM) ─────────────────────────────────────────────────────────
+def word_level_bio_no_spans(text: str) -> list[tuple[str, str]]:
+    """Tokenize text into (token, 'O') pairs — no spans needed for inference."""
+    return [(tok, 'O') for tok, _, _ in word_tokenize(text)]
 
-def encode_token(tok: str, token2id: dict, unk_id: int) -> int:
-    return token2id.get(tok, unk_id)
+# ── CRF Feature Extraction ────────────────────────────────────────────────────
 
-def encode_chars(tok: str, char2id: dict, max_char: int = MAX_CHAR) -> list[int]:
-    pad = char2id.get(CHAR_PAD, 0)
-    unk = char2id.get(CHAR_UNK, 1)
-    ids = [char2id.get(c, unk) for c in tok[:max_char]]
-    return ids + [pad] * (max_char - len(ids))
+def token_features(raw_tok: str, norm_tok: str, idx: int,
+                   raw_seq: list[str], norm_seq: list[str]) -> dict:
+    prev_raw = raw_seq[idx - 1] if idx > 0                else '<START>'
+    next_raw = raw_seq[idx + 1] if idx < len(raw_seq) - 1 else '<END>'
 
-# ── Full inference preprocessing ──────────────────────────────────────────────
+    return {
+        'token'            : norm_tok,
+        'is_title_case'    : raw_tok.istitle(),
+        'is_all_upper'     : raw_tok.isupper(),
+        'is_all_lower'     : raw_tok.islower(),
+        'is_digit'         : raw_tok.isdigit(),
+        'has_digit'        : any(c.isdigit() for c in raw_tok),
+        'is_alnum'         : raw_tok.isalnum(),
+        'has_hyphen'       : '-' in raw_tok,
+        'has_at'           : '@' in raw_tok,
+        'has_dot'          : '.' in raw_tok,
+        'has_plus'         : '+' in raw_tok,
+        'has_slash'        : '/' in raw_tok,
+        'token_length'     : len(raw_tok),
+        'is_short'         : len(raw_tok) <= 2,
+        'prefix2'          : norm_tok[:2],
+        'prefix3'          : norm_tok[:3],
+        'prefix4'          : norm_tok[:4],
+        'suffix2'          : norm_tok[-2:],
+        'suffix3'          : norm_tok[-3:],
+        'suffix4'          : norm_tok[-4:],
+        'prev_token'       : prev_raw.lower(),
+        'prev_is_title'    : prev_raw.istitle(),
+        'prev_is_upper'    : prev_raw.isupper(),
+        'next_token'       : next_raw.lower(),
+        'next_is_title'    : next_raw.istitle(),
+        'next_is_upper'    : next_raw.isupper(),
+        'is_sentence_start': idx == 0,
+        'is_sentence_end'  : idx == len(raw_seq) - 1,
+    }
 
-def preprocess_for_inference(text: str, token2id: dict, char2id: dict,
-                              pad_id: int, unk_id: int,
-                              max_len: int = MAX_LEN,
-                              max_char: int = MAX_CHAR) -> tuple:
+
+def align_raw_norm(
+    raw_bio : list[tuple[str, str]],
+    norm_bio: list[tuple[str, str]]
+) -> list[tuple[str, str, str]]:
     """
-    Tokenize, normalize, encode — siap masuk ke model BiLSTM-CRF.
-
-    Returns
-    -------
-    t_tokens  : torch.Tensor (1, max_len)
-    t_chars   : torch.Tensor (1, max_len, max_char)
-    t_mask    : torch.Tensor (1, max_len) bool
-    raw_kept  : list[str]  — original tokens setelah noise removal (untuk display)
+    Align raw and normalized BIO sequences.
+    Normalization can DROP noise tokens — this pairs each normalized token
+    back to its original raw form by skipping dropped tokens.
+    Returns list of (raw_token, norm_token, bio_tag).
     """
-    import torch
+    aligned  = []
+    raw_iter = iter(raw_bio)
+    for norm_tok, norm_tag in norm_bio:
+        for raw_tok, raw_tag in raw_iter:
+            if raw_tag == norm_tag:
+                aligned.append((raw_tok, norm_tok, norm_tag))
+                break
+    return aligned
 
-    raw_tokens = word_tokenize(text)
-    norm_tokens, raw_kept = [], []
 
-    for raw_tok, _, _ in raw_tokens:
-        norm = normalize_token(raw_tok)
-        if norm is not None:
-            norm_tokens.append(norm)
-            raw_kept.append(raw_tok)
+def build_features_for_inference(
+    raw_bio : list[tuple[str, str]],
+    norm_bio: list[tuple[str, str]]
+) -> tuple[list[dict], list[str]]:
+    """Build CRF feature dicts for inference. Returns (features, norm_tokens)."""
+    aligned   = align_raw_norm(raw_bio, norm_bio)
+    raw_toks  = [r for r, _, _ in aligned]
+    norm_toks = [n for _, n, _ in aligned]
 
-    tok_ids  = [encode_token(t, token2id, unk_id) for t in norm_tokens[:max_len]]
-    char_ids = [encode_chars(t, char2id, max_char) for t in norm_tokens[:max_len]]
-    real_len = len(tok_ids)
-
-    pad_char = [char2id.get(CHAR_PAD, 0)] * max_char
-    tok_ids  += [pad_id] * (max_len - real_len)
-    char_ids += [pad_char] * (max_len - real_len)
-    mask      = [True] * real_len + [False] * (max_len - real_len)
-
-    t_tokens = torch.tensor([tok_ids],  dtype=torch.long)
-    t_chars  = torch.tensor([char_ids], dtype=torch.long)
-    t_mask   = torch.tensor([mask],     dtype=torch.bool)
-
-    return t_tokens, t_chars, t_mask, raw_kept
+    features = [
+        token_features(raw_toks[i], norm_toks[i], i, raw_toks, norm_toks)
+        for i in range(len(aligned))
+    ]
+    return features, norm_toks
 
 # ── BIO → structured dict ─────────────────────────────────────────────────────
 
@@ -158,7 +191,7 @@ def bio_to_entities(tokens: list, tags: list) -> dict:
     result = {}
     for label, values in entities.items():
         key = LABEL_KEY_MAP.get(label, label.lower().replace(' ', '_'))
-        result[key] = list(dict.fromkeys(values))   # deduplicate, preserve order
+        result[key] = list(dict.fromkeys(values))
     return result
 
 # ── File text extraction ──────────────────────────────────────────────────────
