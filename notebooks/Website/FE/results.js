@@ -17,11 +17,10 @@ const ENTITY_CONFIG = [
 const grid     = document.getElementById("resultsGrid");
 const popupOverlay  = document.getElementById("popupOverlay");
 const filenameLabel = document.getElementById("filenameLabel");
-const copyBtn       = document.getElementById("copyBtn");
+// const copyBtn       = document.getElementById("copyBtn");
 
 /* ── Load data ──────────────────────────────── */
 const raw = sessionStorage.getItem("nerResult");
-console.log("raw from storage:", raw)
 const filename = sessionStorage.getItem("nerFilename") || "";
 
 if (!raw || raw === "undefined") {
