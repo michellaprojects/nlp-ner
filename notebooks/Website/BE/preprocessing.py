@@ -192,6 +192,17 @@ def bio_to_entities(tokens: list, tags: list) -> dict:
     for label, values in entities.items():
         key = LABEL_KEY_MAP.get(label, label.lower().replace(' ', '_'))
         result[key] = list(dict.fromkeys(values))
+
+    if 'skills' in result:
+        split_skills = []
+        for skill_str in result['skills']:
+            if ',' in skill_str:
+                parts = [s.strip() for s in skill_str.split(',') if s.strip()]
+            else:
+                parts = [s.strip() for s in skill_str.split() if s.strip()]
+            split_skills.extend(parts)
+        result['skills'] = list(dict.fromkeys(split_skills))
+
     return result
 
 # ── File text extraction ──────────────────────────────────────────────────────
