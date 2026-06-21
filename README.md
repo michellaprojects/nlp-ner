@@ -1,4 +1,4 @@
-NLP Project: NER Resume Extractions on 9 Different Model
+NLP Project: NER Resume Extractions on 8 Different Model
 Models used: 
 - CRF 
 - HMM Generative 
@@ -7,5 +7,4 @@ Models used:
 - BiLSTM-CRF + CharCNN
 - DistilBERT 
 - BERT 
-- Llama (Zero-Shot)
-- Llama (Few-Shot)
+- Llama (Zero-Shot & Few-Shot)
