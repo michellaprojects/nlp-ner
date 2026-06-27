@@ -1,5 +1,5 @@
 [build]
-buildCommand = "pip install -r notebooks/Website/BE/requirements.txt && python -m spacy download en_core_web_sm"
+buildCommand = "cd notebooks/Website/BE && pip install -r requirements.txt"
 
 [deploy]
 startCommand = "cd notebooks/Website/BE && gunicorn app:app"
