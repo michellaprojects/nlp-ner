@@ -13,7 +13,7 @@ from preprocessing import (
 )
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://nlp-ner-fe.vercel.app/"])
 
 # ── Load model ────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
