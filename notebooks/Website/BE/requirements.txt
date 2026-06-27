@@ -1,7 +1,7 @@
 flask>=3.0.0
 flask-cors>=4.0.0
 gunicorn
-spacy==3.7.4
+spacy==3.7.5
 sklearn-crfsuite
 pdfminer.six
 python-docx>=1.1.0
