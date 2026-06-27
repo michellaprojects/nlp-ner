@@ -1,6 +1,6 @@
 /* app.js – upload page logic */
 
-const API_BASE = "http://127.0.0.1:5000"; // change to prod URL when deployed
+const API_BASE = "nlp-ner-production.up.railway.app"; // change to prod URL when deployed
 
 const fileInput   = document.getElementById("fileInput");
 const dropZone    = document.getElementById("dropZone");
