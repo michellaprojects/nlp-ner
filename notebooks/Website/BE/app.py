@@ -17,7 +17,7 @@ CORS(app, origins=["https://nlp-ner-fe.vercel.app/"])
 
 # ── Load model ────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model = pickle.load(open(os.path.join(BASE_DIR, "../../Modelling/model_result/crf_model.pkl"), "rb"))
+model = model = pickle.load(open(os.path.join(BASE_DIR, "crf_model.pkl"), "rb"))
 
 
 # ═════════════════════════════════════════════════════════════════════════════
