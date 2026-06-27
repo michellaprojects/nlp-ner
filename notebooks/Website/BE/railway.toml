@@ -3,3 +3,6 @@ buildCommand = "pip install -r requirements.txt"
 
 [deploy]
 startCommand = "gunicorn app:app"
+
+[environment]
+PYTHON_VERSION = "3.11"
